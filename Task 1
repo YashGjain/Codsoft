@@ -1,0 +1,382 @@
+import java.util.Random; 
+import java.util.Scanner; 
+public class GuessingGame { 
+    private String[] morseCode; 
+
+    private int maxAttempts; 
+
+    private String correctMorseCode; 
+
+    private int attemptCount; 
+
+  
+
+    public GuessingGame() { 
+
+        morseCode = new String[101]; 
+
+        for (int i = 0; i <= 9; i++) { 
+
+            switch (i) { 
+
+                case 0: 
+
+                    morseCode[i] = "-----"; 
+
+                    break; 
+
+                case 1: 
+
+                    morseCode[i] = ".----"; 
+
+                    break; 
+
+                case 2: 
+
+                    morseCode[i] = "..---"; 
+
+                    break; 
+
+                case 3: 
+
+                    morseCode[i] = "...--"; 
+
+                    break; 
+
+                case 4: 
+
+                    morseCode[i] = "....-"; 
+
+                    break; 
+
+                case 5: 
+
+                    morseCode[i] = "....."; 
+
+                    break; 
+
+                case 6: 
+
+                    morseCode[i] = "-...."; 
+
+                    break; 
+
+                case 7: 
+
+                    morseCode[i] = "--..."; 
+
+                    break; 
+
+                case 8: 
+
+                    morseCode[i] = "---.."; 
+
+                    break; 
+
+                case 9: 
+
+                    morseCode[i] = "----."; 
+
+                    break; 
+
+                default: 
+
+                    morseCode[i] = getMorseCode(i); 
+
+            } 
+
+        } 
+
+        for (int i = 10; i <= 100; i++) { 
+
+            morseCode[i] = getMorseCode(i); 
+
+        } 
+
+        maxAttempts = 6; 
+
+    } 
+
+  
+
+    public void startGame() { 
+
+        Random random = new Random(); 
+
+        int correctNumber = random.nextInt(101); 
+
+        correctMorseCode = morseCode[correctNumber]; 
+
+        attemptCount = 0; 
+
+  
+
+        System.out.println("Welcome to the Morse code guessing game!"); 
+
+        System.out.println("I'm thinking of a number in Morse code, and you have to guess it in number form."); 
+
+        System.out.println("You have " + maxAttempts + " attempts to guess the correct number."); 
+
+        System.out.println("Here's the Morse code for the number: " + correctMorseCode); 
+
+  
+
+        Scanner scanner = new Scanner(System.in); 
+
+        while (attemptCount < maxAttempts) { 
+
+            System.out.print("Enter your guess (or 'quit' to give up): "); 
+
+            String guess = scanner.nextLine(); 
+
+  
+
+            if (guess.equalsIgnoreCase("quit")) { 
+
+                System.out.println("Game over! The correct number was " + getNumberFromMorseCode(correctMorseCode) + "."); 
+
+                break; 
+
+            } 
+
+  
+
+            try { 
+
+                int guessNumber = Integer.parseInt(guess); 
+
+                if (guessNumber >= 0 && guessNumber <= 100) { 
+
+                    if (guessNumber == getNumberFromMorseCode(correctMorseCode)) { 
+
+                        System.out.println("Hurray! You are correct! The correct number was " + guessNumber + "."); 
+
+                        break; 
+
+                    } else { 
+
+                        attemptCount++; 
+
+                        if (attemptCount < maxAttempts) { 
+
+                            if (Math.abs(guessNumber - getNumberFromMorseCode(correctMorseCode)) <= 1) { 
+
+                                System.out.println("Warm! You're close to the correct number. Try again!"); 
+
+                            } else { 
+
+                                System.out.println("Cold! You're far from the correct number. Try again!"); 
+
+                            } 
+
+                        } else { 
+
+                            System.out.println("Game over! The correct number was " + getNumberFromMorseCode(correctMorseCode) + "."); 
+
+                            break; 
+
+                        } 
+
+                    } 
+
+                } else { 
+
+                    System.out.println("Invalid number. Please enter a number between 0 and 100."); 
+
+                    attemptCount++; 
+
+                } 
+
+            } catch (NumberFormatException e) { 
+
+                System.out.println("Invalid input. Please enter a number."); 
+
+                attemptCount++; 
+
+            } 
+
+        } 
+
+  
+
+        scanner.close(); 
+
+    } 
+
+  
+
+    private String getMorseCode(int number) { 
+
+        String morseCode = ""; 
+
+        int tens = number / 10; 
+
+        int ones = number % 10; 
+
+        morseCode += getMorseCodeDigit(tens); 
+
+        morseCode += " "; 
+
+        morseCode += getMorseCodeDigit(ones); 
+
+        return morseCode; 
+
+    } 
+
+  
+
+    private String getMorseCodeDigit(int digit) { 
+
+        switch (digit) { 
+
+            case 0: 
+
+                return "-----"; 
+
+            case 1: 
+
+                return ".----"; 
+
+            case 2: 
+
+                return "..---"; 
+
+            case 3: 
+
+                return "...--"; 
+
+            case 4: 
+
+                return "....-"; 
+
+            case 5: 
+
+                return "....."; 
+
+            case 6: 
+
+                return "-...."; 
+
+            case 7: 
+
+                return "--..."; 
+
+            case 8: 
+
+                return "---.."; 
+
+            case 9: 
+
+                return "----."; 
+
+            default: 
+
+                return ""; 
+
+        } 
+
+    } 
+
+  
+
+    private int getNumberFromMorseCode(String morseCode) { 
+
+        String[] morseCodeParts = morseCode.split(" "); 
+
+        int number = 0; 
+
+        int tens = 0; 
+
+        int ones = 0; 
+
+        for (String morseCodePart : morseCodeParts) { 
+
+            int digit = getDigitFromMorseCode(morseCodePart); 
+
+            if (digit >= 0) { 
+
+                if (tens == 0) { 
+
+                    tens = digit; 
+
+                } else { 
+
+                    ones = digit; 
+
+                    number = tens * 10 + ones; 
+
+                } 
+
+            } 
+
+        } 
+
+        return number; 
+
+    } 
+
+  
+
+    private int getDigitFromMorseCode(String morseCode) { 
+
+        switch (morseCode) { 
+
+            case "-----": 
+
+                return 0; 
+
+            case ".----": 
+
+                return 1; 
+
+            case "..---": 
+
+                return 2; 
+
+            case "...--": 
+
+                return 3; 
+
+            case "....-": 
+
+                return 4; 
+
+            case ".....": 
+
+                return 5; 
+
+            case "-....": 
+
+                return 6; 
+
+            case "--...": 
+
+                return 7; 
+
+            case "---..": 
+
+                return 8; 
+
+            case "----.": 
+
+                return 9; 
+
+            default: 
+
+                return -1; 
+
+        } 
+
+    } 
+
+  
+
+    public static void main(String[] args) { 
+
+        GuessingGame game = new GuessingGame(); 
+
+        game.startGame(); 
+
+    } 
+
+} 
